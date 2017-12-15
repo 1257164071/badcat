@@ -1,0 +1,31 @@
+<?php if (!defined('THINK_PATH')) exit();?>
+<div class="alert alert-success">
+
+    <div class="col-lg-4"><span>用户帐号:<?php echo ($user["user_code"]); ?></span></div>
+    <div class="col-lg-4"><span>手机号:<?php echo ($user["user_mobile"]); ?></span></div>
+    <div class="col-lg-4"><span>用户名称:<?php echo ($user["user_name"]); ?></span></div>
+    <br><br>
+    <div class="col-lg-6" style="text-align: center">所属部门:<?php echo ($user["department_id"]); ?></div>
+    <div class="col-lg-6" style="text-align: center">当前岗位:<?php echo ($user["work_name"]); ?></div>
+    <br>
+</div>
+<input name="id" value="<?php echo ($user["id"]); ?>" hidden>
+分配权限<br><br>
+
+<div class="form-group">
+
+    <div class="col-sm-9 ">
+            <div class="form-group">
+                <div class="col-sm-9 icheck ">
+                    <?php if(is_array($permissio)): $i = 0; $__LIST__ = $permissio;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><span style="margin-left: 25px">
+                        <input type="checkbox" name="<?php echo ($vo["id"]); ?>" value="<?php echo ($vo["id"]); ?>" <?php if($vo["flag_a"] == 1): ?>checked<?php endif; ?> >
+                        <label><?php echo ($vo["permissio_name"]); ?> </label>
+                    </span><?php endforeach; endif; else: echo "" ;endif; ?>
+
+                </div>
+            </div>
+
+
+
+    </div>
+</div>

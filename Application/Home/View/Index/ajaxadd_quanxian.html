@@ -1,0 +1,33 @@
+
+<div class="alert alert-success">
+
+    <div class="col-lg-4"><span>用户帐号:{$user.user_code}</span></div>
+    <div class="col-lg-4"><span>手机号:{$user.user_mobile}</span></div>
+    <div class="col-lg-4"><span>用户名称:{$user.user_name}</span></div>
+    <br><br>
+    <div class="col-lg-6" style="text-align: center">所属部门:{$user.department_id}</div>
+    <div class="col-lg-6" style="text-align: center">当前岗位:{$user.work_name}</div>
+    <br>
+</div>
+<input name="id" value="{$user.id}" hidden>
+分配权限<br><br>
+
+<div class="form-group">
+
+    <div class="col-sm-9 ">
+            <div class="form-group">
+                <div class="col-sm-9 icheck ">
+                    <volist name="permissio" id="vo">
+                    <span style="margin-left: 25px">
+                        <input type="checkbox" name="{$vo.id}" value="{$vo.id}" <if condition="$vo.flag_a == 1">checked</if> >
+                        <label>{$vo.permissio_name} </label>
+                    </span>
+                    </volist>
+
+                </div>
+            </div>
+
+
+
+    </div>
+</div>

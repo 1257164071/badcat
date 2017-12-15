@@ -1,0 +1,12 @@
+
+<h3>预算执行名称:{$mingxi.budget_name}</h3>
+
+<br>
+预算执行明细
+<textarea rows="6" class="form-control" readonly name="budget_desc">{$mingxi.budget_desc}</textarea>
+
+<img src="{$mingxi.img_path}"/>
+<if  condition="$mingxi.img_path != null">
+
+    <a target="_blank" onclick="window.open('http://{$mingxi.img_path}')">查看附件</a>
+</if>

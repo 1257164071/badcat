@@ -1,0 +1,27 @@
+
+    <div class="alert alert-success">
+
+        <div class="col-lg-4"><span>用户帐号:{$user.user_code}</span></div>
+        <div class="col-lg-4"><span>手机号:{$user.user_mobile}</span></div>
+        <div class="col-lg-4"><span>用户名称:{$user.user_name}</span></div>
+        <br><br>
+        <div class="col-lg-6" style="text-align: center">所属部门:{$user.department_id}</div>
+        <div class="col-lg-6" style="text-align: center">当前岗位:{$user.work_name}</div>
+        <br>
+    </div>
+
+<input name="id" value="{$user.id}" hidden>
+    分配岗位<br><br>
+    <select class="form-control m-bot15" name="work_name">
+        <option value="">请选择</option>
+        <volist name="work" id="vo">
+            <option value="{$vo.post_name}">{$vo.post_name}</option>
+        </volist>
+    </select><br>
+    分配部门<br><br>
+    <select class="form-control m-bot15" name="department_id">
+        <option value="">请选择</option>
+        <volist name="depa" id="vo">
+            <option value="{$vo.id}">{$vo.depart_name}</option>
+        </volist>
+    </select><br>

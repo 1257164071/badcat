@@ -1,0 +1,6 @@
+[ 2017-12-01T16:16:54+08:00 ] 127.0.0.1 /badcat/index.php/login
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000013s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000248s ]
+ERR: 无法加载模块:Login
+

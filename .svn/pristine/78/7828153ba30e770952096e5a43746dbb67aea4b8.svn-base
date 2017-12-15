@@ -1,0 +1,366 @@
+<?php
+namespace Home\Controller;
+use Think\Controller;
+class IndexController extends Controller {
+    public function index(){
+
+        $this->display();
+    }
+
+//    public  function _initialize(){
+//        if(session('userMsg') == null){
+//            header("location:".U('Home/login/login'));
+//            exit(0);
+//        }
+//
+//
+//        $session = session('userMsg');
+//        $res = $session['permissio'];
+//        $res = substr($res,0,strlen($res)-1);
+//        $res = explode(',',$res);
+//        $where = '';
+//        foreach ($res as $key => $val){
+////            $res[$key] = M('permissio')->find($val)['permissio'];
+//            $where .= "id != ".$val.' and ';
+//        }
+//
+//        $res = substr($where,0,strlen($where)-4);
+//
+//        $res = M('permissio')->where($res)->select();
+//        $arr = array();
+//        foreach ($res as $key => $val){
+//            $arr[$key] = $val['permissio'];
+//        }
+//
+//
+//        $nologin = $arr;
+//        if(in_array(ACTION_NAME,$nologin)){
+//            echo "<script>alert('没有权限')</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }
+//    }
+
+    //用户列表页面
+    public function user_list()
+    {
+        $user_list=M('user a')->join("left join base_department b on a.department_id=b.id")->select();
+        $user_list = M('user')->select();
+
+        foreach ($user_list as $key => $val){
+            $user_list[$key]['department_id'] = M('department')->where(['id' => $val['department_id']])->getField('depart_name');
+        }
+        $this->assign('user_list',$user_list);
+        $this->display();
+    }
+    //添加用户
+    public function user_add(){
+        $post = I('post.');
+
+        if($post['user_code'] == null){
+            exit(0);
+        }
+        if($post['user_name'] == null){
+            exit(0);
+        }
+        if($post['user_mobile'] == null){
+            exit(0);
+        }
+        $res = M('user')->where(['user_code' => $post['user_code']])->select();
+        if($res != null){
+            exit(0);
+        }
+        $post['user_pwd'] = md5('123456');
+        $res = M('user')->data($post)->add();
+        if($res == null){
+            exit(0);
+        }else{
+            echo 1;
+            exit(0);
+        }
+    }
+    //删除用户
+    public function user_del(){
+        $post = I('post.user_code');
+//        dump($post);die;
+        $res = M('user')->where(['user_code'=>$post])->delete();
+        if($res == null){
+            exit(0);
+        }else{
+            echo 1;
+
+            exit(1);
+        }
+    }
+
+    //部门
+    public function depart(){
+
+
+        $list = M('department')->select();
+
+
+        $this->assign('list',$list);
+        $this->display();
+    }
+
+
+    public function depart_add(){
+        $post = I('post.');
+        if($post['depart_code'] == null){
+            echo "1";
+            exit(0);
+        }
+        if($post['depart_name'] == null){
+            echo "2";
+
+            exit(0);
+        }
+        if($post['id'] == null){
+            echo "3";
+
+        $res = M('department')->where(['depart_code' => $post['depart_code']])->select();
+        if($res != null){
+            exit(0);
+        }
+        $res = M('department')->data($post)->add();
+            echo "4";
+
+        }else{
+            echo "5";
+
+            $res = M('department')->save($post);
+        }
+        if($res == null){
+            
+            exit(0);
+        }else{
+            echo 1;
+            exit(0);
+        }
+
+    }
+
+    public function depart_del(){
+        $post = I('post.id');
+
+        $res = M('department')->where(['id'=>$post])->delete();
+        if($res == null){
+            exit(0);
+        }else{
+            echo 1;
+            exit(1);
+        }
+    }
+
+
+    //岗位
+    public function work(){
+        $list = M('work')->select();
+        $this->assign('list',$list);
+        $this->display();
+    }
+
+    public function work_add(){
+        $post = I('post.');
+
+        if($post['post_name'] == null){
+            exit(0);
+        }
+
+        if($post['id'] == null){
+
+            $res = M('work')->where(['post_name' => $post['post_name']])->select();
+            if($res != null){
+                exit(0);
+            }
+            $res = M('work')->data($post)->add();
+
+        }else{
+            $res = M('work')->save($post);
+        }
+        if($res == null){
+            exit(0);
+        }else{
+            echo 1;
+            exit(0);
+        }
+
+    }
+
+    public function work_del(){
+        $post = I('post.id');
+
+        $res = M('work')->where(['id'=>$post])->delete();
+        if($res == null){
+            exit(0);
+        }else{
+            echo 1;
+            exit(1);
+        }
+    }
+
+    public function ajaxUser_data(){
+
+        $depa = M('department')->select();
+        $work = M('work')->select();
+
+        $id = I('post.data');
+        $user = M('user')->find($id);
+
+
+
+
+        $this->assign(
+            array(
+                'depa' => $depa,
+                'work' => $work,
+                'user' => $user,
+            )
+        );
+        $this->display();
+    }
+
+    public function change_user(){
+        $post = I('post.');
+        if($post['work_name'] == ''){
+            unset($post['work_name']);
+        }
+        if($post['department_id'] == ''){
+            unset($post['department_id']);
+        }
+
+        $id = $post['id'];
+        unset($post['id']);
+        $res = M('user')->where(['id' => $id])->save($post);
+        if($res == null){
+            echo "<script>alert('没有更改')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }else{
+            echo "<script>alert('成功')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+    }
+
+    public function user_post (){
+
+        $list = M('user')->select();
+
+        foreach ($list as $key=> $val){
+
+            $list[$key]['department_id'] = M('department')->where(['id' => $val['department_id']])->getField('depart_name');
+
+        }
+        $this->assign('list',$list);
+        $this->display();
+    }
+
+    public function ajaxadd_quanxian(){
+        $depa = M('department')->select();
+        $work = M('work')->select();
+
+        $id = I('post.data');
+        $user = M('user')->find($id);
+
+        $permissio = M('permissio')->select();
+
+        $res = M('user')->where(['id' => $id])->getField('permissio');
+        $res = substr($res,0,strlen($res)-1);
+        $res = explode(',',$res);
+//        dump($res);die;
+
+        foreach ($permissio as $key => $val){
+            foreach ($res as $key2 => $val2){
+
+                if($val['id'] == $val2){
+                    $permissio[$key]['flag_a'] = 1;
+                }
+            }
+        }
+
+        $user['department_id'] = M('department')->where(['id' => $user['department_id']])->getField('depart_name');
+
+        $this->assign(
+            array(
+                'permissio' => $permissio,
+                'depa' => $depa,
+                'work' => $work,
+                'user' => $user,
+            )
+        );
+        $this->display();
+    }
+
+
+    public function quanxian_add(){
+        $post = I('post.');
+        unset($post['id']);
+        $str = '';
+        foreach ($post as $key => $val){
+            $str .= $post[$key].',';
+        }
+        $res = M('user')->where(['id' => I('post.id')])->setField('permissio',$str);
+        if($res == null){
+            echo "<script>alert('未修改！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }else{
+            echo "<script>alert('成功！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+    }
+
+    //改密页面
+    public function change_pwd(){
+
+        $this->display();
+    }
+    public function change_pw(){
+        header('Content-Type: text/html; charset=utf-8');
+
+        //var_dump($_POST);
+        //exit;
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            if (empty($_POST["firstname"])) {
+                echo "<script>alert('用户名称不能为空！');</script>";
+                echo "<script>history.go(-1);location.reload()</script>";
+                die;
+            }elseif (empty($_POST["username"])) {
+                echo "<script>alert('当前密码不能为空！');</script>";
+                echo "<script>history.go(-1);location.reload()</script>";die;
+            }elseif (empty($_POST["user_pwd"])) {
+                echo "<script>alert('新密码不能为空！');</script>";
+                echo "<script>history.go(-1);location.reload()</script>";die;
+            } elseif (empty($_POST["confirm_password"])) {
+                echo "<script>alert('重复密码不能为空！');</script>";
+                echo "<script>history.go(-1);location.reload()</script>";die;
+            }elseif($_POST['user_pwd']!=$_POST['confirm_password']){
+                echo "<script>alert('两次密码不一致！');</script>";
+                echo "<script>history.go(-1);location.reload()</script>";die;
+            } else {
+                $user_code=$_POST['firstname'];
+                $user_pwdold=md5($_POST['username']);
+                $user_pwdnew=md5($_POST['user_pwd']);
+                if($user_code==$_SESSION['userMsg']['user_code']&&$user_pwdold==$_SESSION['userMsg']['user_pwd']){
+                    M('user')->where("user_code='{$_SESSION['userMsg']['user_code']}'")->setField('user_pwd',$user_pwdnew);
+
+                    $_SESSION['userMsg']['user_pwd']=$user_pwdnew;
+                    $href=U('Index/index');
+                    echo "<script>alert('改密成功！');</script>";
+                    echo "<script>window.location.href='$href'</script>";
+                }else{
+                    echo "<script>alert('账号或密码错误！');</script>";
+                    echo "<script>history.go(-1);location.reload()</script>";
+                }
+
+            }
+        }
+
+    }
+
+
+}

@@ -1,0 +1,16 @@
+
+<h4 style="text-align: center">报销人部门:{$mingxi.department_name}</h4>
+<h4 style="text-align: center">报销人员:{$mingxi.expenses_man_name}</h4>
+<h4 style="text-align: center">金额:{$mingxi.income_amt}</h4>
+<h4 style="text-align: center">申报日期:{$mingxi.expenses_date}</h4>
+<input value="{$mingxi.expenses_no}" hidden name="expenses_no" />
+<br>明细
+<textarea rows="6" class="form-control" readonly name="budget_desc" style="margin-top: 15px;">{$mingxi.execution_text}</textarea>
+<img src="{$mingxi.img_path}"/>
+<if  condition="$mingxi.img_path != null">
+    <a target="_blank" onclick="window.open('http://{$mingxi.img_path}')">查看附件</a>
+</if>
+<br>
+<span class="">审批意见： </span>审批通过<input type="radio" value="5" checked name="expenses_flag">不通过<input type="radio" value="4" name="expenses_flag">
+
+<textarea rows="6" class="form-control" name="finance_check_text" style="margin-top: 15px;"></textarea>

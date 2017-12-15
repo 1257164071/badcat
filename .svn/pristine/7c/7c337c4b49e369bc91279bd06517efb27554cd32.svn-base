@@ -1,0 +1,12 @@
+
+    <div class="col-lg-6" style="text-align: center">预算名称:{$mingxi.type_name}&nbsp&nbsp&nbsp预算类型:{$mingxi.type_name}</div>
+
+    <br>
+详情
+<textarea rows="6" class="form-control" readonly name="budget_desc">{$mingxi.budget_desc}</textarea>
+
+<img src="{$mingxi.img_path}"/>
+    <if  condition="$mingxi.img_path != null">
+
+<a target="_blank" onclick="window.open('http://{$mingxi.img_path}')">查看附件</a>
+    </if>

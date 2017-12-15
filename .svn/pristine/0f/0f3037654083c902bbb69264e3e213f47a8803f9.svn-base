@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+    <link rel="shortcut icon" href="#" type="image/png">
+
+    <title>合同录入</title>
+
+
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__js/bootstrap-datepicker/css/datepicker-custom.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__js/bootstrap-timepicker/css/timepicker.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__js/bootstrap-colorpicker/css/colorpicker.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__js/bootstrap-daterangepicker/daterangepicker-bs3.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__js/bootstrap-datetimepicker/css/datetimepicker-custom.css" />
+
+    <!--dropzone css-->
+    <link href="__PUBLIC__js/dropzone/css/dropzone.css" rel="stylesheet"/>
+
+    <!--common css-->
+    <link href="__PUBLIC__css/style.css" rel="stylesheet">
+    <link href="__PUBLIC__css/style-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="__PUBLIC__js/bootstrap-wysihtml5/bootstrap-wysihtml5.css" />
+
+      <link href="__PUBLIC__css/style.css" rel="stylesheet">
+      <link href="__PUBLIC__css/style-responsive.css" rel="stylesheet">
+
+
+      <link href="__PUBLIC__css/style.css" rel="stylesheet">
+      <link href="__PUBLIC__css/style-responsive.css" rel="stylesheet">
+
+      <link href="__PUBLIC__css/style.css" rel="stylesheet">
+      <link href="__PUBLIC__css/style-responsive.css" rel="stylesheet">
+
+      <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="__PUBLIC__js/html5shiv.js"></script>
+    <script src="__PUBLIC__js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="sticky-header">
+
+<section>
+    <!-- left side start-->
+    <include file="./Application/Home/Common/index_head.html"/>
+    <!-- left side end-->
+
+    <!-- main content start-->
+    <div class="main-content" >
+
+        <!-- header section start-->
+        <include file="./Application/Home/Common/index_list.html"/>
+        <!-- header section end-->
+
+        <!-- page heading start-->
+        <div class="page-heading">
+            <h3>
+                合同管理
+            </h3>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">合同管理</a>
+                </li>
+                <li class="active"> 合同录入</li>
+            </ul>
+        </div>
+        <!-- page heading end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <section class="panel">
+                        <header class="panel-heading">
+                            录入合同档案
+                        </header>
+                        <div class="panel-body">
+                            <div class="form">
+                                <form class="cmxform form-horizontal adminex-form" id="signupForm" method="post" action="">
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">合同单号</label>
+                                        <div class="col-lg-10">
+                                            <input class=" form-control" id="firstname2" readonly value="{$data.contract_no}" name="contract_no" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">合同年度</label>
+                                        <div class="col-lg-10">
+                                            <input class=" form-control" id="firstname" value="{$data.year_no}" readonly name="year_no" type="text" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">月份</label>
+                                        <div class="col-lg-10">
+                                            <input class=" form-control" id="" value="{$data.month_no}" readonly name="month_no" type="text" />
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">合同生效开始日期</label>
+                                        <div class="col-lg-10">
+                                            <input class="form_datetime form-control" id="" value="{$data.contract_start_date}" readonly name="contract_start_date" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">合同生效结束日期</label>
+                                        <div class="col-lg-10">
+                                            <input class="form_datetime form-control" id="" readonly value="{$data.contract_end_date}" name="contract_end_date" type="text" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">签约甲方</label>
+                                        <div class="col-lg-10">
+                                            <input class=" form-control" id="" readonly value="{$data.contract_a}" name="contract_a" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">签约乙方</label>
+                                        <div class="col-lg-10">
+                                            <input class=" form-control" id="" readonly value="{$data.contract_b}" name="contract_b" type="text" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">合同标题</label>
+                                        <div class="col-lg-10">
+                                            <input class=" form-control" id="" readonly value="{$data.contract_name}" name="contract_name" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">合同金额</label>
+                                        <div class="col-lg-10">
+                                            <input class=" form-control" id="" name="contract_amt" readonly value="{$data.contract_amt}" type="text" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+
+                                        <label for="firstname" class="control-label col-lg-2">合同详情</label>
+
+                                        <section class="panel">
+
+                                            <div class="panel-body">
+                                                <div class="form">
+                                                    <form action="#" class="form-horizontal">
+                                                        <div class="form-group">
+                                                            <div class="col-sm-10">
+                                                                <textarea class="form-control ckeditor" name="contract_text" readonly rows="6">{$data.contract_text}</textarea>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                    <div class="wrapper" style="margin-left: 10%">
+                                        <div class="attachment-mail">
+                                            <p>
+                                                <span><i class="fa fa-paperclip"></i> {$num} 附件  </span>
+                                                <!--<a href="#">下载所有附件</a>-->
+                                            </p>
+                                            <ul>
+                                                <volist name="img_list" id="vo">
+                                                    <li>
+                                                        <a class="atch-thumb" href="#">
+                                                            <img src="http://{$vo.img_path2}">
+                                                        </a>
+
+                                                        <a class="name" href="#">
+                                                            IMG_001.jpg
+                                                        </a>
+
+                                                        <div class="links">
+                                                            <a href="http://{$vo.img_path2}" target="_blank">查看</a> -
+                                                        </div>
+                                                    </li>
+
+                                                </volist>
+
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!--<div class="wrapper">-->
+
+                                        <!--<section class="panel">-->
+                                            <!--<header class="panel-heading">-->
+                                                <!--上传附件-->
+
+                                            <!--</header>-->
+                                            <!--<div class="panel-body">-->
+                                                <!--<form action="{:U('Income/pact_upload')}" class="dropzone" id="my-awesome-dropzone"></form>-->
+                                            <!--</div>-->
+                                        <!--</section>-->
+
+
+
+                                    <!--</div>-->
+
+
+
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <input class="btn btn-primary" onclick="del_com('{$data.id}')" type="submit" value="提交">
+                                            <button class="btn btn-default" style="margin-left: 100px" onclick="window.history.go(-1)" type="button">取消</button>
+
+                                        </div>
+                                    </div>
+
+
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+
+        <!--footer section end-->
+
+
+    </div>
+    <!-- main content end-->
+</section>
+<script>
+    function del_com(data){
+        var r = confirm("确定提交吗？");
+        if(r == true){
+            window.location.href="pact_tijiao"+'?id='+data;
+            return true;
+        }else{
+            return false;
+        }
+    }
+</script>
+<!-- Placed js at the end of the document so the pages load faster -->
+<script src="__PUBLIC__js/jquery-1.10.2.min.js"></script>
+<script src="__PUBLIC__js/jquery-ui-1.9.2.custom.min.js"></script>
+<script src="__PUBLIC__js/jquery-migrate-1.2.1.min.js"></script>
+<script src="__PUBLIC__js/bootstrap.min.js"></script>
+<script src="__PUBLIC__js/modernizr.min.js"></script>
+<script src="__PUBLIC__js/jquery.nicescroll.js"></script>
+
+<script src="__PUBLIC__js/validation-init.js"></script>
+
+<!--common scripts for all pages-->
+<script src="__PUBLIC__js/html5shiv.js"></script>
+<script src="__PUBLIC__js/respond.min.js"></script>
+
+
+
+<!--pickers plugins-->
+<script type="text/javascript" src="__PUBLIC__js/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="__PUBLIC__js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="__PUBLIC__js/bootstrap-daterangepicker/moment.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__js/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script type="text/javascript" src="__PUBLIC__js/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
+<script type="text/javascript" src="__PUBLIC__js/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
+
+
+<script type="text/javascript" src="__PUBLIC__js/ckeditor/ckeditor.js"></script>
+
+<script type="text/javascript" src="__PUBLIC__js/bootstrap-wysihtml5/wysihtml5-0.3.0.js"></script>
+<script type="text/javascript" src="__PUBLIC__js/bootstrap-wysihtml5/bootstrap-wysihtml5.js"></script>
+
+
+<script src="__PUBLIC__js/dropzone/dropzone.js"></script>
+
+<!--common scripts for all pages-->
+<script src="__PUBLIC__js/scripts.js"></script>
+<!--pickers initialization-->
+<script src="__PUBLIC__js/pickers-init.js"></script>
+<!--pickers plugins-->
+<!--pickers initialization-->
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+    <link rel="shortcut icon" href="#" type="image/png">
+
+    <title>内控管理系统</title>
+
+
+    <link href="__PUBLIC__css/style.css" rel="stylesheet">
+    <link href="__PUBLIC__css/style-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="__PUBLIC__js/html5shiv.js"></script>
+    <script src="__PUBLIC__js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="sticky-header">
+
+<section>
+    <!-- left side start-->
+    <include file="./Application/Home/Common/index_head.html"/>
+    <!-- left side end-->
+
+    <!-- main content start-->
+    <div class="main-content" >
+
+        <!-- header section start-->
+        <include file="./Application/Home/Common/index_list.html"/>
+        <!-- header section end-->
+
+        <!-- page heading start-->
+        <div class="page-heading">
+            <h3>
+                预算单填写
+            </h3>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">预算管理</a>
+                </li>
+                <li class="active"> 预算单填写 </li>
+            </ul>
+        </div>
+        <!-- page heading end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <section class="panel">
+                        <header class="panel-heading">
+                            请输入正确的信息 (*必填)
+                        </header>
+                        <div class="panel-body">
+                            <div class="form">
+                                <form class="cmxform form-horizontal adminex-form" id="signupForm" method="post" action="{:U('Depart/depart_send_add')}">
+                                    <div class="form-group ">
+                                        <label for="firstname" class="control-label col-lg-2">预算年度*</label>
+                                        <div class="col-lg-10">
+                                            <input class=" form-control" id="firstname" name="year_no" type="text" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group ">
+                                        <label for="lastname" class="control-label col-lg-2">预算部门*</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control m-bot15" name="department_id">
+                                                <option value="">请选择</option>
+                                                <volist name="depa" id="vo">
+                                                    <option value="{$vo.id}">{$vo.depart_name}</option>
+                                                </volist>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="lastname" class="control-label col-lg-2">预算员名称*</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control m-bot15" name="budget_man">
+                                                <option value="">请选择</option>
+                                                <volist name="user" id="vo">
+                                                    <option value="{$vo.id}">{$vo.user_name}</option>
+                                                </volist>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label for="lastname" class="control-label col-lg-2">部门领导人*</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control m-bot15" name="depart_leader_checkman">
+                                                <option value="">请选择</option>
+                                                <volist name="user" id="vo">
+                                                    <option value="{$vo.id}">{$vo.user_name}</option>
+                                                </volist>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button class="btn btn-primary" type="submit">提交</button>
+                                            <button class="btn btn-default" style="margin-left: 100px" onclick="window.history.go(-1)" type="button">取消</button>
+
+                                        </div>
+                                    </div>
+
+
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+
+        <!--footer section end-->
+
+
+    </div>
+    <!-- main content end-->
+</section>
+
+<!-- Placed js at the end of the document so the pages load faster -->
+<script src="__PUBLIC__js/jquery-1.10.2.min.js"></script>
+<script src="__PUBLIC__js/jquery-ui-1.9.2.custom.min.js"></script>
+<script src="__PUBLIC__js/jquery-migrate-1.2.1.min.js"></script>
+<script src="__PUBLIC__js/bootstrap.min.js"></script>
+<script src="__PUBLIC__js/modernizr.min.js"></script>
+<script src="__PUBLIC__js/jquery.nicescroll.js"></script>
+
+<script src="__PUBLIC__js/validation-init.js"></script>
+
+<!--common scripts for all pages-->
+<script src="__PUBLIC__js/scripts.js"></script>
+
+</body>
+</html>

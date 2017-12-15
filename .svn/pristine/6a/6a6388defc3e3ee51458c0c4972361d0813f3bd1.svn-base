@@ -1,0 +1,1056 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: nightdays
+ * Date: 17-12-9
+ * Time: 上午10:17
+ */
+namespace Home\Controller;
+use Think\Controller;
+class IncomeController extends Controller{
+
+    public function income_man(){
+
+        $user = session('userMsg');
+        $res = M('depart_income_plan')->where(['department_code' => $user['department_id']])->select();
+        $this->assign('list',$res);
+        $this->display();
+    }
+
+    public function income_add(){
+        $post = I('post.');
+
+        $user = session('userMsg');
+        if($user['department_id'] == null){
+            echo "<script>alert('请分配部门')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+        $post['plan_no'] = date('Ym').$user['department_id'].rand(time(),time()+10000);
+        $post['department_code'] = $user['department_id'];
+        $post['department_name'] = M('department')->where(['id' => $user['department_id']])->getField('depart_name');
+        $post['plan_man'] = $user['id'];
+        $post['plan_man_name'] = $user['user_name'];
+        $post['plan_date'] = date('Y-m-d H:i:s',time());
+        $res = M('depart_income_plan')->data($post)->add();
+        if($res){
+            echo "<script>alert('添加成功！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('添加失败！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+
+    public function income_del(){
+        header('Content-Type: text/html; charset=utf-8');
+        // var_dump($_GET);
+        $id = $_GET['id'];
+        $res = M("depart_budget")->where(['id' => $_GET['id']])->select();
+        $res = M('depart_income_plan_detail')->where(['plan_no'=>$res[0]['plan_no']])->select();
+        if($res != null){
+            echo "<script>alert('有预算明细未被删除！');</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        $rs=M("depart_income_plan")->where("id={$id}")->delete();
+        if($rs){
+            echo "<script>alert('删除成功！');</script>";
+            echo "<script>history.go(-1);</script>";
+        }else{
+            echo "<script>alert('删除失败！');</script>";
+            echo "<script>history.go(-1);</script>";
+        }
+    }
+
+    public function income_detail(){
+        $id = I('get.id');
+        $data = M('depart_income_plan')->where(['id' => $id])->select()[0];
+        if($data == null){
+            echo "<script>alert('错误')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+        $money = M('depart_income_plan_detail')->where(['plan_no' => $data['plan_no']])->sum('income_amt');
+
+        $res = M('depart_income_plan_detail')->where(['plan_no' => $data['plan_no']])->order('id desc')->select();
+        $this->assign('money',$money);
+        $this->assign('data',$data);
+        $this->assign('list',$res);
+
+        $this->display();
+    }
+
+    public function income_add_mingxi(){
+
+        $id = I('get.id');
+        $data = M('depart_income_plan')->where(['id' => $id])->select()[0];
+        if($data == null){
+            echo "<script>alert('错误')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+        $type = M('budget_type')->select();
+
+
+        $this->assign('type',$type);
+        $this->assign('data',$data);
+
+        $this->display();
+    }
+
+    public function upload() {
+        if ($_FILES['file']['name'] !='') {
+            //如果有文件上传 上传附件
+            return $this->_upload();
+        }
+    }
+
+    // 文件上传
+    protected function _upload() {
+        import('@.ORG.UploadFile');
+        //导入上传类
+        $upload = new \Org\Util\UploadFile();
+        //设置上传文件大小
+        $upload->maxSize            = -1;
+        //设置上传文件类型
+        $upload->allowExts          = explode(',', 'jpg,mp4,jpeg,bmp,png');
+        //设置附件上传目录
+        $upload->savePath           = './Uploads/';
+        // 设置引用图片类库包路径
+        $upload->imageClassPath     = '@.ORG.Image';
+        //设置上传文件规则
+        $upload->saveRule           = 'uniqid';
+        //删除原图
+        $upload->thumbRemoveOrigin  = true;
+        if (!$upload->upload()) {
+            //捕获上传异常
+            $this->error($upload->getErrorMsg());
+        } else {
+            //取得成功上传的文件信息
+            $uploadList = $upload->getUploadFileInfo();
+
+            import('@.ORG.Image');
+        }
+//        $model  = M('Photo');
+        //保存当前数据对象
+        $data['image']          = $_POST['image'];
+        $data['create_time']    = NOW_TIME;
+//        $list   = $model->add($data);
+
+        return $uploadList;
+    }
+
+    public function income_detail_add(){
+
+        $post = I('post.');
+        if($post['income_amt'] == ''){
+            echo "<script>alert('钱数不能为空')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+
+        $res = M('depart_income_plan')->where(['plan_no' => I('post.plan_no')])->getField('plan_flag');
+        if($res != 0){
+            echo "<script>alert('已经提交不能编辑')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+        $arr=$this->upload();
+        $post['img_path']="{$arr[0]['savepath']}"."{$arr[0]['savename']}";
+
+        $res = M('depart_income_plan_detail')->data($post)->add();
+        if($res){
+            echo "<script>alert('添加成功！');</script>";
+            echo "<script>history.go(-1);</script>";
+        }else{
+            echo "<script>alert('失败！');</script>";
+            echo "<script>history.go(-1);</script>";
+        }
+
+    }
+
+    public function ajaxImg_Income(){
+
+        $id = I('post.data');
+        $res = M('depart_income_plan_detail')->where(['id' => $id])->select();
+
+        if($res[0]['img_path'] !=null){
+            $res[0]['img_path'] = $_SERVER['HTTP_HOST'].'/badcat'.substr($res[0]['img_path'],1);
+        }else{
+            $res[0]['img_path'] = null;
+        }
+
+        $this->assign('mingxi',$res[0]);
+        $this->display();
+    }
+
+    public function income_detail_mingxi(){
+        header('Content-Type: text/html; charset=utf-8');
+        // var_dump($_GET);
+        $id = $_GET['id'];
+        $flag = M("depart_income_plan_detail")->where("id={$id}")->getField('plan_no');
+        $flag = M('depart_income_plan')->where(['plan_no' => $flag])->getField('plan_flag');
+
+        if($flag != 0){
+            echo "<script>alert('已提交单据无法修改！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+
+        $rs=M("depart_income_plan_detail")->where("id={$id}")->delete();
+        if($rs){
+            echo "<script>alert('删除成功！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('删除失败！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+
+
+    public function income_send(){
+
+        $this->display();
+    }
+    public function send_shenhe(){
+
+
+        $id = I('get.id');
+        $flag = M('depart_income_plan')->where(['id' => $id])->getField('plan_flag');
+        if($flag != 0){
+            echo "<script>alert('已提交')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+
+        $res = M('depart_income_plan')->where(['id' => $id])->setField('plan_flag',1);
+        if($res == null){
+            echo "<script>alert('失败')</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }else{
+            echo "<script>alert('成功')</script>";
+            echo "<script>history.go(-1);</script>";
+        }
+    }
+//收入计划领导审核
+    public function income_man_mingxi(){
+        $user = session('userMsg');
+        $res = M('depart_income_plan')->where(['department_code' => $user['department_id'],'plan_flag'=>1])->select();
+        $this->assign('list',$res);
+        $this->display();
+    }
+
+    public function shenh(){
+        header('Content-Type: text/html; charset=utf-8');
+//        if($_POST['depart_leader_check_text']==''){
+//            echo "<script>alert('请填写审批意见！');</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }elseif ($_POST['plan_flag']==''){
+//            echo "<script>alert('请选择审核结果！');</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }else{
+            $_POST['depart_leader_check_time']=date('Y-m-d H:i:s',time());
+            $_POST['depart_leader_checkman']=$_SESSION['userMsg']['id'];
+            $_POST['depart_leader_checkman_name']=$_SESSION['userMsg']['user_name'];
+            $re=M('depart_income_plan')->where("id={$_POST['id']}")->save($_POST);
+            if($re){
+                echo "<script>alert('审批成功')</script>";
+                echo "<script>history.go(-1);</script>";
+            }else{
+                echo "<script>alert('审批失败')</script>";
+                echo "<script>history.go(-1);</script>";
+                die;
+            }
+       // }
+    }
+
+    //收入计划财务审核
+    public function income_man_mingxi2(){
+        $user = session('userMsg');
+        $res = M('depart_income_plan')->where(['department_code' => $user['department_id'],'plan_flag'=>3])->select();
+        $this->assign('list',$res);
+        $this->display();
+    }
+
+    public function shenh2(){
+        header('Content-Type: text/html; charset=utf-8');
+//        if($_POST['finance_check_text']==''){
+//            echo "<script>alert('请填写审批意见！');</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }elseif ($_POST['plan_flag']==''){
+//            echo "<script>alert('请选择审核结果！');</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }else{
+            $_POST['finance_check_time']=date('Y-m-d H:i:s',time());
+            $_POST['finance_checkman']=$_SESSION['userMsg']['id'];
+            $_POST['finance_checkman_name']=$_SESSION['userMsg']['user_name'];
+            $re=M('depart_income_plan')->where("id={$_POST['id']}")->save($_POST);
+            if($re){
+                echo "<script>alert('审批成功')</script>";
+                echo "<script>history.go(-1);</script>";
+            }else{
+                echo "<script>alert('审批失败')</script>";
+                echo "<script>history.go(-1);</script>";
+                die;
+            }
+       // }
+    }
+
+    public function income_mingxi(){
+        $this->display();
+    }
+
+//    public function shenpin_queren(){
+//
+//        $id = I('get.id');
+//        $user = session('userMsg');
+//        $data = M('depart_income_plan')->where(['id' => $id])->select()[0];
+//
+//        if($data['plan_flag'] != 1){
+//            echo "<script>alert('无法审核')</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }
+//
+//        $data['plan_flag'] = 3;
+//        $data['depart_leader_checkman'] = $user['id'];
+//        $data['depart_leader_checkman_name'] = $user['user_name'];
+//        $data['depart_leader_check_time'] = date('Y-m-d H:i:s',time());
+//        $res = M('depart_income_plan')->where(['id' => $id])->save($data);
+//
+//        if($res == null){
+//            echo "<script>alert('失败')</script>";
+//            echo "<script>history.go(-1);</script>";
+//            die;
+//        }else{
+//            echo "<script>alert('成功')</script>";
+//            echo "<script>history.go(-1);</script>";
+//        }
+//
+//    }
+//
+//
+//    public function shenpin_fanhui(){
+//
+//        $id = I('get.id');
+//        $data = M('depart_income_plan')->where(['id' => $id])->select()[0];
+//
+//        if($data['plan_flag'] != 1){
+//            echo "<script>alert('无法审核')</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }cd /
+//        $res = M('depart_income_plan')->where(['id' => $id])->setField('plan_flag',2);
+//
+//        if($res == null){
+//            echo "<script>alert('失败')</script>";
+//            echo "<script>history.go(-1);</script>";
+//            die;
+//        }else{
+//            echo "<script>alert('成功')</script>";
+//            echo "<script>history.go(-1);</script>";
+//        }
+//
+//    }
+
+    //登记
+    public function income_checkin(){
+
+        $res = M('depart_income_plan')->where("plan_flag != 0")->select();
+        $this->assign('list',$res);
+        $this->display();
+    }
+
+    public function income_queren(){
+        $post = I('get.id');
+        $user = session('userMsg');
+        $res = M('depart_income_plan')->find($post);
+        if($res['real_book_flag'] != 0){
+            echo "<script>alert('已经登记')</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        $data['real_book_flag'] = 1;
+        $data['real_book_date'] = date('Y-m-d H:i:s',time());
+        $data['real_book_man'] = $user['id'];
+        $data[''] = $user['user_name'];
+        $res = M('depart_income_plan')->where(['id'=>$post])->save($data);
+        if($res == null){
+            echo "<script>alert('失败')</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }else{
+            echo "<script>alert('成功')</script>";
+            echo "<script>history.go(-1);</script>";
+        }
+
+    }
+
+
+    //预算执行明细 前缀execute
+
+    public function execute_man(){
+
+        $user = session('userMsg');
+        $res = M('depart_budget_execution')->where(['department_code' => $user['department_id']])->select();
+        $this->assign('list',$res);
+        $this->display();
+    }
+
+
+    public function execute_add(){
+        $post = I('post.');
+
+        $user = session('userMsg');
+        if($user['department_id'] == null){
+            echo "<script>alert('请分配部门')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+        $post['execution_no'] = date('Ym').$user['department_id'].rand(time(),time()+10000);
+        $post['department_code'] = $user['department_id'];
+        $post['department_name'] = M('department')->where(['id' => $user['department_id']])->getField('depart_name');
+        $post['budget_man'] = $user['id'];
+        $post['budget_man_name'] = $user['user_name'];
+        $post['budget_date'] = date('Y-m-d H:i:s',time());
+        $res = M('depart_budget_execution')->data($post)->add();
+        if($res){
+            echo "<script>alert('添加成功！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('添加失败！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+
+    public function execute_send_shenhe(){
+
+
+        $id = I('get.id');
+        $flag = M('depart_budget_execution')->where(['id' => $id])->getField('budget_flag');
+        if($flag != 0){
+            echo "<script>alert('已提交')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+
+        $res = M('depart_budget_execution')->where(['id' => $id])->setField('budget_flag',1);
+        if($res == null){
+            echo "<script>alert('失败')</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }else{
+            echo "<script>alert('成功')</script>";
+            echo "<script>history.go(-1);</script>";
+        }
+    }
+
+
+
+    public function execute_del(){
+        header('Content-Type: text/html; charset=utf-8');
+        // var_dump($_GET);
+        $id = $_GET['id'];
+        $res = M("depart_budget_execution")->where(['id' => $_GET['id']])->select();
+        $res = M('yusuan_zhixing')->where(['budget_flag'=>$res[0]['budget_flag']])->select();
+        if($res != null){
+            echo "<script>alert('有预算执行明细未被删除！');</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        $rs = M("depart_budget_execution")->where("id={$id}")->delete();
+        if($rs){
+            echo "<script>alert('删除成功！');</script>";
+            echo "<script>history.go(-1);</script>";
+        }else{
+            echo "<script>alert('删除失败！');</script>";
+            echo "<script>history.go(-1);</script>";
+        }
+    }
+
+    public function execute_detail(){
+
+
+        $id = I('get.id');
+        $data = M('depart_budget_execution')->where(['id' => $id])->select()[0];
+        if($data == null){
+            echo "<script>alert('错误')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+
+
+        $money = M('yusuan_zhixing')->where(['execution_no' => $data['execution_no']])->sum('budget_amt');
+
+        $this->assign('money',$money);
+
+        $res = M('yusuan_zhixing')->where(['execution_no' => $data['execution_no']])->order('id desc')->select();
+        $this->assign('data',$data);
+        $this->assign('list',$res);
+        $this->display();
+    }
+
+    public function execute_mingxi_del(){
+        header('Content-Type: text/html; charset=utf-8');
+        // var_dump($_GET);
+        $id = $_GET['id'];
+        $flag = M("yusuan_zhixing")->where("id={$id}")->getField('type_name');
+        $flag = M('yusuan_zhixing')->where(['budget_no' => $flag])->getField('type_name');
+
+        if($flag != 0){
+            echo "<script>alert('已提交单据无法修改！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+
+        $rs=M("yusuan_zhixing")->where("id={$id}")->delete();
+        if($rs){
+            echo "<script>alert('删除成功！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('删除失败！');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+
+    public function execute_add_mingxi(){
+        $id = I('get.id');
+        $data = M('depart_budget_execution')->where(['id' => $id])->select()[0];
+        if($data == null){
+            echo "<script>alert('错误')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+        $this->assign('data',$data);
+
+        $this->display();
+    }
+
+    public function execute_mingxi_add(){
+
+        header('Content-Type: text/html; charset=utf-8');
+
+
+
+        $res = M('depart_budget_execution')->where(['execution_no'=>$_POST['execution_no']])->getField('budget_flag');
+        if($res != 0){
+            echo "<script>alert('已提交不能修改');</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        $arr=$this->upload();
+        $_POST['img_path']="{$arr[0]['savepath']}"."{$arr[0]['savename']}";
+        $rs=M("yusuan_zhixing")->add($_POST);
+
+        if($rs){
+            echo "<script>alert('添加成功');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('添加失败');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+        $this->display();
+    }
+
+    public function execute_ajaxImg(){
+
+        $id = I('post.data');
+        $res = M('yusuan_zhixing')->where(['id' => $id])->select();
+
+//        img_path
+
+
+        if($res[0]['img_path'] !=null){
+            $res[0]['img_path'] = $_SERVER['HTTP_HOST'].'/badcat'.substr($res[0]['img_path'],1);
+        }else{
+            $res[0]['img_path'] = null;
+        }
+
+        $this->assign('mingxi',$res[0]);
+        $this->display();
+    }
+
+//领导审批
+    public function execute_man_shenpi(){
+        $user = session('userMsg');
+        $res = M('depart_budget_execution')->where(['department_code' => $user['department_id'],'budget_flag'=>1])->select();
+        $this->assign('list',$res);
+
+        $this->display();
+    }
+    public function shenhee(){
+        header('Content-Type: text/html; charset=utf-8');
+//        if($_POST['depart_leader_check_text']==''){
+//            echo "<script>alert('请填写审批意见！');</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }elseif ($_POST['budget_flag']==''){
+//            echo "<script>alert('请选择审核结果！');</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }else{
+            $_POST['depart_leader_check_time']=date('Y-m-d H:i:s',time());
+            $_POST['depart_leader_checkman']=$_SESSION['userMsg']['id'];
+            $_POST['depart_leader_checkman_name']=$_SESSION['userMsg']['user_name'];
+            $re=M('depart_budget_execution')->where("id={$_POST['id']}")->save($_POST);
+            if($re){
+                echo "<script>alert('审批成功')</script>";
+                echo "<script>history.go(-1);</script>";
+            }else{
+                echo "<script>alert('审批失败')</script>";
+                echo "<script>history.go(-1);</script>";
+                die;
+            }
+        //}
+    }
+
+    //财务审核
+    public function execute_man_shenpi2(){
+        $user = session('userMsg');
+        $res = M('depart_budget_execution')->where(['department_code' => $user['department_id'],'budget_flag'=>3])->select();
+        $this->assign('list',$res);
+
+        $this->display();
+    }
+    public function shenhee2(){
+        header('Content-Type: text/html; charset=utf-8');
+//        if($_POST['finance_check_text']==''){
+//            echo "<script>alert('请填写审批意见！');</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }elseif ($_POST['budget_flag']==''){
+//            echo "<script>alert('请选择审核结果！');</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }else{
+            $_POST['finance_check_time']=date('Y-m-d H:i:s',time());
+            $_POST['finance_checkman']=$_SESSION['userMsg']['id'];
+            $_POST['finance_checkman_name']=$_SESSION['userMsg']['user_name'];
+            $re=M('depart_budget_execution')->where("id={$_POST['id']}")->save($_POST);
+            if($re){
+                echo "<script>alert('审批成功')</script>";
+                echo "<script>history.go(-1);</script>";
+            }else{
+                echo "<script>alert('审批失败')</script>";
+                echo "<script>history.go(-1);</script>";
+                die;
+            }
+        //}
+    }
+//    public function execute_man_pizhun(){
+//        $id = I('get.id');
+//        $data = M('depart_budget_execution')->where(['id' => $id])->select()[0];
+//        if($data['budget_flag'] != 1){
+//            echo "<script>alert('无法审核')</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }
+//        $res = M('depart_budget_execution')->where(['id' => $id])->setField('budget_flag',2);
+//
+//        if($res == null){
+//            echo "<script>alert('失败')</script>";
+//            echo "<script>history.go(-1);</script>";
+//            die;
+//        }else{
+//            echo "<script>alert('成功')</script>";
+//            echo "<script>history.go(-1);</script>";
+//        }
+//    }
+//
+//    public function execute_man_tuihui(){
+//        $id = I('get.id');
+//        $data = M('depart_budget_execution')->where(['id' => $id])->select()[0];
+//
+//        if($data['budget_flag'] != 1){
+//            echo "<script>alert('无法审核')</script>";
+//            echo "<script>history.go(-1);location.reload()</script>";
+//            die;
+//        }
+//        $res = M('depart_budget_execution')->where(['id' => $id])->setField('budget_flag',3);
+//
+//        if($res == null){
+//            echo "<script>alert('失败')</script>";
+//            echo "<script>history.go(-1);</script>";
+//            die;
+//        }else{
+//            echo "<script>alert('成功')</script>";
+//            echo "<script>history.go(-1);</script>";
+//        }
+//    }
+
+    public function execute_man_mingxi(){
+        $id = I('get.id');
+        $data = M('depart_budget_execution')->where(['id' => $id])->select()[0];
+        if($data == null){
+            echo "<script>alert('错误')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+
+
+        $money = M('yusuan_zhixing')->where(['execution_no' => $data['execution_no']])->sum('budget_amt');
+
+        $this->assign('money',$money);
+
+        $res = M('yusuan_zhixing')->where(['execution_no' => $data['execution_no']])->order('id desc')->select();
+        $this->assign('data',$data);
+        $this->assign('list',$res);
+
+        $this->display();
+    }
+
+
+    public function execute_man_zhichu(){
+        $user = session('userMsg');
+        $res = M('depart_budget_execution')->where(['department_code' => $user['department_id'],'budget_flag'=>1])->select();
+        $this->assign('list',$res);
+
+        $this->display();
+    }
+
+    //报销管理 apply
+
+    public function apply_man (){
+
+        $user = session('userMsg');
+        $res = M('depart_expenses_bx')->where(['department_code' => $user['department_id']])->select();
+
+        $this->assign('list',$res);
+        $this->display();
+    }
+
+    public function apply_man_add(){
+
+        $this->display();
+    }
+
+    public function apply_form_add(){
+
+        header('Content-Type: text/html; charset=utf-8');
+
+        if($_POST['year_no'] == ""){
+            echo "<script>alert('年度不能为空');</script>";
+            echo "<script>history.go(-1);</script>";die;
+        }
+
+        if($_POST['month_no'] == ""){
+            echo "<script>alert('月份不能为空');</script>";
+            echo "<script>history.go(-1);</script>";die;
+        }
+
+        if($_POST['income_amt'] == ""){
+            echo "<script>alert('金额不能为空');</script>";
+            echo "<script>history.go(-1);</script>";die;
+        }
+
+
+        $arr=$this->upload();
+        $_POST['img_path']="{$arr[0]['savepath']}"."{$arr[0]['savename']}";
+
+        $user = session('userMsg');
+        $_POST['expenses_no'] = date('Ym').$user['department_id'].rand(time(),time()+10000);
+        $_POST['department_code'] = $user['department_id'];
+        $_POST['department_name'] = M('department')->where(['id' => $user['department_id']])->getField('depart_name');
+        $_POST['expenses_man'] = $user['id'];
+        $_POST['expenses_man_name'] = $user['user_name'];
+        $_POST['expenses_date'] = date('Y-m-d H:i:s',time());
+
+        $rs=M("depart_expenses_bx")->add($_POST);
+
+        if($rs){
+            echo "<script>alert('添加成功');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('添加失败');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+
+    public function apply_man_del(){
+        $id = I('get.id');
+
+        $res = M('depart_expenses_bx')->where(['id' => $id])->delete();
+        if($res == null){
+            echo "<script>alert('删除失败');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('删除成功');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+
+    public function apply_man_tijiao(){
+        $id = I('get.id');
+
+        $res = M('depart_expenses_bx')->where(['id' => $id])->setField('expenses_flag',1);
+        if($res == null){
+            echo "<script>alert('提交失败');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('提交成功');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+//费用报销领导审批
+    public function apply_man_shenpi(){
+
+        $user = session('userMsg');
+        $res = M('depart_expenses_bx')->where(['department_code' => $user['department_id'],'expenses_flag'=>1])->select();
+
+        $this->assign('list',$res);
+        $this->display();
+    }
+
+    public function apply_ajax_xiangqing(){
+        $id = I('post.data');
+        $res = M('depart_expenses_bx')->where(['id' => $id])->select();
+
+        if($res[0]['img_path'] !=null){
+            $res[0]['img_path'] = $_SERVER['HTTP_HOST'].'/badcat'.substr($res[0]['img_path'],1);
+        }else{
+            $res[0]['img_path'] = null;
+        }
+
+        $this->assign('mingxi',$res[0]);
+
+        $this->display();
+    }
+
+    public function apply_shenpi_post(){
+
+        $post = I('post.');
+        if($post['expenses_flag'] == null){
+            echo "<script>alert('先选择通过 不通过');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+        $post['depart_leader_check_time']=date('Y-m-d H:i:s',time());
+        $post['depart_leader_checkman']=$_SESSION['userMsg']['id'];
+        $post['depart_leader_checkman_name']=$_SESSION['userMsg']['user_name'];
+        //$res = M('depart_expenses_bx')->where(['expenses_no' => $post['expenses_no']])->setField('expenses_flag',$post['expenses_flag']);
+        $res = M('depart_expenses_bx')->where(['expenses_no' => $post['expenses_no']])->setField($post);
+        if($res == null){
+            echo "<script>alert('审批失败');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }else{
+            echo "<script>alert('审批成功');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+
+    //费用报销财务审批
+    public function apply_man_shenpi2(){
+
+        $user = session('userMsg');
+        $res = M('depart_expenses_bx')->where(['department_code' => $user['department_id'],'expenses_flag'=>3])->select();
+
+        $this->assign('list',$res);
+        $this->display();
+    }
+    public function apply_ajax_xiangqing2(){
+        $id = I('post.data');
+        $res = M('depart_expenses_bx')->where(['id' => $id])->select();
+
+        if($res[0]['img_path'] !=null){
+            $res[0]['img_path'] = $_SERVER['HTTP_HOST'].'/badcat'.substr($res[0]['img_path'],1);
+        }else{
+            $res[0]['img_path'] = null;
+        }
+
+        $this->assign('mingxi',$res[0]);
+
+        $this->display();
+    }
+    public function apply_shenpi_post2(){
+
+        $post = I('post.');
+        if($post['expenses_flag'] == null){
+            echo "<script>alert('先选择通过 不通过');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+        $_POST['finance_check_time']=date('Y-m-d H:i:s',time());
+        $_POST['finance_checkman']=$_SESSION['userMsg']['id'];
+        $_POST['finance_checkman_name']=$_SESSION['userMsg']['user_name'];
+        //$res = M('depart_expenses_bx')->where(['expenses_no' => $post['expenses_no']])->setField('expenses_flag',$post['expenses_flag']);
+        $res = M('depart_expenses_bx')->where(['expenses_no' => $post['expenses_no']])->setField($post);
+        if($res == null){
+            echo "<script>alert('审批失败');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }else{
+            echo "<script>alert('审批成功');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+
+    //合同zZ
+    public function pact_man(){
+        $res = M('contract')->select();
+
+        $this->assign('list',$res);
+        $this->display();
+    }
+
+    public function pact_man_add (){
+
+        $this->assign('contract_no','H'.time().rand(time(),time()+1000));
+
+        $this->display();
+    }
+
+
+    public function pact_upload(){
+        $res = $this->upload();
+        $data = array();
+        $data['order_no'] = $_SERVER['HTTP_X_FILE_NAME'];
+        $data['type'] = $res[0]['type'];
+        $data['path_img'] = "{$res[0]['savepath']}"."{$res[0]['savename']}";
+        $data['accessory_date'] = date('Y-m-d H:i:s',time());
+        M('accessory')->data($data)->add();
+
+
+    }
+    public function pact_post_add(){
+        if($_POST['year_no'] == null){
+            echo "<script>alert('年度不能为空');</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        if($_POST['month_no'] == null){
+            echo "<script>alert('年度不能为空');</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        if($_POST['contract_start_date'] == null){
+            echo "<script>alert('开始时间不能为空');</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        if($_POST['contract_end_date'] == null){
+            echo "<script>alert('结束时间不能为空');</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        if($_POST['contract_name'] == null){
+            echo "<script>alert('标题不能为空');</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        if($_POST['contract_name'] == null){
+            echo "<script>alert('标题不能为空');</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }
+        $post = I('post.');
+        $user = session('userMsg');
+
+        $post['department_code'] = $user['department_id'];
+        $post['department_name'] = M('department')->where(['id' => $user['department_id']])->getField('depart_name');
+        $post['contract_date'] = date('Y-m-d H:i:s',time());
+
+        $res = M('contract')->data($post)->add();
+        if($res == null){
+            echo "<script>alert('添加失败');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('添加成功');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+    }
+
+    public function pact_post_show(){
+        $id = I('get.id');
+        $res = M('contract')->find($id);
+        $img = M('accessory')->where(['order_no' => $res['contract_no']])->select();
+
+        foreach ($img as $key => $val){
+            $img[$key]['img_path2'] = $_SERVER['HTTP_HOST'].'/badcat'.substr($img[$key]['path_img'],1);
+        }
+        $this->assign('num',count($img));
+        $this->assign('img_list',$img);
+        $this->assign('data',$res);
+        $this->display();
+    }
+
+    public function pact_change_z(){
+        $post = I('post.');
+        if($post['expenses_flag'] == null){
+            echo "<script>alert('先选择通过 不通过');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+        $res = M('depart_expenses_bx')->where(['expenses_no' => $post['expenses_no']])->setField('expenses_flag',$post['expenses_flag']);
+        if($res == null){
+            echo "<script>alert('审批失败');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('审批成功');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+
+    }
+    public function pact_del(){
+
+        $id = I('get.id');
+        $res = M('contract')->where(['id' => $id])->getField('contract_flag');
+        if($res != 0){
+            echo "<script>alert('已提交无法删除');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+
+        $res = M('contract')->where(['id' => $id])->delete();
+        if($res == null){
+            echo "<script>alert('删除失败');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }else{
+            echo "<script>alert('删除成功');</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+        }
+
+    }
+
+    public function pact_shenpi(){
+
+
+    }
+
+    public function pact_tijiao(){
+
+        $id = I('get.id');
+        $flag = M('contract')->where(['id' => $id])->getField('contract_flag');
+        if($flag != 0){
+            echo "<script>alert('已提交')</script>";
+            echo "<script>history.go(-1);location.reload()</script>";
+            die;
+        }
+
+        $res = M('contract')->where(['id' => $id])->setField('contract_flag',1);
+        if($res == null){
+            echo "<script>alert('提交失败')</script>";
+            echo "<script>history.go(-1);</script>";
+            die;
+        }else{
+            echo "<script>alert('提交成功')</script>";
+            echo "<script>history.go(-1);</script>";
+        }
+    }
+
+
+    //综合查询   query开头
+    public function query_execute(){
+
+        $this->display();
+    }
+
+
+
+}

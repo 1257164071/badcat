@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+    <link rel="shortcut icon" href="#" type="image/png">
+
+    <title>内控管理系统</title>
+
+    <!--dynamic table-->
+    <link href="__PUBLIC__js/advanced-datatable/css/demo_page.css" rel="stylesheet" />
+    <link href="__PUBLIC__js/advanced-datatable/css/demo_table.css" rel="stylesheet" />
+    <link rel="stylesheet" href="js/data-tables/DT_bootstrap.css" />
+
+    <link href="__PUBLIC__css/style.css" rel="stylesheet">
+    <link href="__PUBLIC__css/style-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="__PUBLIC__js/html5shiv.js"></script>
+    <script src="__PUBLIC__js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="sticky-header">
+
+<section>
+    <!-- left side start-->
+    <include file="./Application/Home/Common/index_head.html"/>
+    <!-- left side end-->
+
+    <!-- main content start-->
+    <div class="main-content" >
+
+        <!-- header section start-->
+        <include file="./Application/Home/Common/index_list.html"/>
+        <!-- header section end-->
+
+        <!-- page heading start-->
+        <div class="page-heading">
+            <h3>
+                费用报销申请
+            </h3>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">收入管理</a>
+                </li>
+                <li class="active"> 费用报销申请 </li>
+            </ul>
+            <!--<a href="javascript:history.back(-1)"><img width="40" height="50" src="__PUBLIC__/images/back.png"/></a>-->
+        </div>
+        <!-- page heading end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+            <div class="row">
+                <div class="col-sm-12">
+                    <section class="panel">
+                        <header class="panel-heading">
+                            详情  &nbsp&nbsp总计金额：<span style="color: red;">{$money}</span>
+                            <button style="margin-left: 30px" class="btn btn-default"><a href="{:U('Income/apply_man_add')}?id={$data['id']}">添加</a></button>
+                            <span class="tools pull-right">
+                <a href="javascript:;" class="fa fa-chevron-down"></a>
+                <a href="javascript:history.back(-1);" class="fa fa-times"></a>
+             </span>
+                        </header>
+                        <div class="panel-body">
+                            <div class="adv-table">
+                                <table class="display table table-bordered" id="hidden-table-info">
+                                    <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>报销单号</th>
+                                        <th class="hidden-phone">金额</th>
+                                        <th class="hidden-phone">报销人员</th>
+                                        <th class="hidden-phone">报销日期</th>
+                                        <th class="hidden-phone">状态</th>
+                                        <th class="hidden-phone">提交</th>
+                                        <th class="hidden-phone">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <volist name="list" id="v" key="k">
+                                        <tr class="gradeX">
+                                            <td>{$k}</td>
+                                            <td>{$v.expenses_no}</td>
+                                            <td class="hidden-phone">{$v.income_amt}</td>
+                                            <td class="hidden-phone">{$v.expenses_man_name}</td>
+                                            <td class="center hidden-phone">{$v.expenses_date}</td>
+                                            <td class="center">
+                                                <if condition="$v.expenses_flag == 0">等待提交</if>
+                                                <if condition="$v.expenses_flag == 1">已提交待审核</if>
+                                                <if condition="$v.expenses_flag == 2">部门领导审核退回</if>
+                                                <if condition="$v.expenses_flag == 3">待财务审核</if>
+                                                <if condition="$v.expenses_flag == 4">财务审核退回</if>
+                                                <if condition="$v.expenses_flag == 5">财务审核通过</if>
+                                            </td>
+                                            <td class="center hidden-phone"><a style="cursor:pointer" onclick='del_com("{$v.id}")'>提交</a></td>
+                                            <td class="center"> <a style="cursor:pointer" href="{:U('Income/apply_man_del')}?id={$v.id}">删除</a></td>
+                                        </tr>
+                                    </volist>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <a href="javascript:history.back(-1)" style="margin-top: -20px;margin-left: 17px;"><button>返回</button></a>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <form action="{:U('index/change_user')}" method="post">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                详情
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+
+
+
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+
+
+                        </div>
+                    </form>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+        <!--footer section end-->
+
+
+    </div>
+    <!-- main content end-->
+</section>
+
+<!-- Placed js at the end of the document so the pages load faster -->
+<script src="__PUBLIC__js/jquery-1.10.2.min.js"></script>
+<script src="__PUBLIC__js/jquery-ui-1.9.2.custom.min.js"></script>
+<script src="__PUBLIC__js/jquery-migrate-1.2.1.min.js"></script>
+<script src="__PUBLIC__js/bootstrap.min.js"></script>
+<script src="__PUBLIC__js/modernizr.min.js"></script>
+<script src="__PUBLIC__js/jquery.nicescroll.js"></script>
+
+<!--dynamic table-->
+<script type="text/javascript" language="javascript" src="__PUBLIC__js/advanced-datatable/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="__PUBLIC__js/data-tables/DT_bootstrap.js"></script>
+<!--dynamic table initialization -->
+<script src="__PUBLIC__js/dynamic_table_init.js"></script>
+
+<!--common scripts for all pages-->
+<script src="__PUBLIC__js/scripts.js"></script>
+<script>
+
+    function del_com(data){
+        var r = confirm("确定提交吗？");
+        if(r == true){
+            window.location.href="apply_man_tijiao"+'?id='+data;
+            return true;
+        }else{
+            return false;
+        }
+    }
+</script>
+</body>
+</html>

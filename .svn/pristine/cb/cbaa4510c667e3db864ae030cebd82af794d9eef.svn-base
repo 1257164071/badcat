@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+    <link rel="shortcut icon" href="#" type="image/png">
+
+    <title>部门预算明细</title>
+
+    <!--dynamic table-->
+    <link href="__PUBLIC__js/advanced-datatable/css/demo_page.css" rel="stylesheet" />
+    <link href="__PUBLIC__js/advanced-datatable/css/demo_table.css" rel="stylesheet" />
+    <link rel="stylesheet" href="js/data-tables/DT_bootstrap.css" />
+
+    <link href="__PUBLIC__css/style.css" rel="stylesheet">
+    <link href="__PUBLIC__css/style-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="__PUBLIC__js/html5shiv.js"></script>
+    <script src="__PUBLIC__js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="sticky-header">
+
+<section>
+    <!-- left side start-->
+    <include file="./Application/Home/Common/index_head.html"/>
+    <!-- left side end-->
+
+    <!-- main content start-->
+    <div class="main-content" >
+
+        <!-- header section start-->
+        <include file="./Application/Home/Common/index_list.html"/>
+        <!-- header section end-->
+
+        <!-- page heading start-->
+        <div class="page-heading">
+            <h3>
+                部门预算明细
+                <span class="pull-right" style="font-size: 15px;line-height: 30px">审批状态:
+                <td class="center">
+                    <if condition="$data.plan_flag == 0">等待提交</if>
+                    <if condition="$data.plan_flag == 1">已提交待审核</if>
+                    <if condition="$data.plan_flag == 2">部门领导审核退回</if>
+                    <if condition="$data.plan_flag == 3">待财务审核</if>
+                    <if condition="$data.plan_flag == 4">财务审核退回</if>
+                    <if condition="$data.plan_flag == 5">财务审核通过</if>
+                </td>
+                <br/>部门审批:{$data.depart_leader_checkman_name}<br/>财务审批:{$data.finance_checkman_name}</span>
+
+            </h3>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">预算审批</a>
+                </li>
+
+                <li class="active"> 预算审批明细 </li>
+            </ul>
+        </div>
+        <!-- page heading end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+            <div class="row">
+                <div class="col-sm-12">
+                    <section class="panel">
+                        <header class="panel-heading">
+                            详情  &nbsp&nbsp总计金额：<span style="color: red;">{$money}</span>
+                            <span class="tools pull-right">
+                <a href="javascript:;" class="fa fa-chevron-down"></a>
+                <a href="javascript:history.back(-1);" class="fa fa-times"></a>
+             </span>
+                        </header>
+                        <div class="panel-body">
+                            <div class="adv-table">
+                                <table class="display table table-bordered" id="hidden-table-info">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>预算单编码</th>
+                                        <th class="hidden-phone">预算名称</th>
+                                        <th class="hidden-phone">预算类别</th>
+
+                                        <th class="hidden-phone">详情</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <volist name="list" id="v" key="k">
+                                        <tr class="gradeX">
+                                            <td>{$v.id}</td>
+                                            <td>{$v.budget_no}</td>
+                                            <td class="hidden-phone">{$v.budget_name}</td>
+                                            <td class="center hidden-phone">{$v.type_name}</td>
+
+                                            <td class="center hidden-phone"><a style="cursor:pointer" onclick='get_quanxian("{$v.id}")' data-toggle="modal" data-target="#myModal">查看描述</a></td>
+                                        </tr>
+                                    </volist>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <form action="{:U('index/change_user')}" method="post">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                详情
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+
+
+
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+
+
+                        </div>
+                    </form>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+        <!--footer section end-->
+
+
+    </div>
+    <!-- main content end-->
+</section>
+
+<!-- Placed js at the end of the document so the pages load faster -->
+<script src="__PUBLIC__js/jquery-1.10.2.min.js"></script>
+<script src="__PUBLIC__js/jquery-ui-1.9.2.custom.min.js"></script>
+<script src="__PUBLIC__js/jquery-migrate-1.2.1.min.js"></script>
+<script src="__PUBLIC__js/bootstrap.min.js"></script>
+<script src="__PUBLIC__js/modernizr.min.js"></script>
+<script src="__PUBLIC__js/jquery.nicescroll.js"></script>
+
+<!--dynamic table-->
+<script type="text/javascript" language="javascript" src="__PUBLIC__js/advanced-datatable/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="__PUBLIC__js/data-tables/DT_bootstrap.js"></script>
+<!--dynamic table initialization -->
+<script src="__PUBLIC__js/dynamic_table_init.js"></script>
+
+<!--common scripts for all pages-->
+<script src="__PUBLIC__js/scripts.js"></script>
+<script>
+
+    function get_quanxian(data) {
+        $.ajax({
+            url: "{:U('Depart/ajaxImg')}",
+            type: 'POST',
+            data:{data: data},
+            success:function(data,textStatus,jqXHR){
+                $(".modal-body").html(null);
+                $(".modal-body").html(data);
+            },
+            error:function(xhr,textStatus){
+                console.log('错误')
+                console.log(xhr)
+                console.log(textStatus)
+            },
+        })
+    }
+
+    function del_com(data){
+        var r = confirm("确定删除吗？");
+        if(r == true){
+            window.location.href="depart_mingxi_del"+'?id='+data;
+            return true;
+        }else{
+            return false;
+        }
+    }
+</script>
+</body>
+</html>
